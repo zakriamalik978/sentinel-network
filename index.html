@@ -1,21 +1,174 @@
 <!DOCTYPE html>
 
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Sentinel Network Miner</title> <script src=""></script> <script src=""></script> <style> :root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; } body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; } .logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; } .card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; } .balance { font-size: 42px; font-weight: bold; color: var(--primary); } .timer { font-size: 28px; color: #ffab00; margin: 15px 0; font-family: monospace; } .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 18px; } .btn:disabled { opacity: 0.5; cursor: not-allowed; background: #2d334a; color: #8e94a8; } .info { font-size: 12px; color: #8e94a8; margin-top: 10px; } </style> </head> <body> <img src="" class="logo"> <h2>SENTINEL NETWORK</h2> <div class="card"> <div>TOTAL $SEN BALANCE</div> <div class="balance" id="balance">0</div> </div> <div class="card"> <div id="status">Market Cycle Mining</div> <div class="timer" id="timer">--:--:--</div> <button class="btn" id="claim-btn" onclick="handleMining()" disabled>LOADING...</button> <div class="info">Next cycle starts every 4 hours (UTC)</div> </div> <script> const BLOCK_ID = "22611"; let totalBalance = parseFloat(localStorage.getItem('sen_total_bal')) || 0; let lastClaimTime = parseInt(localStorage.getItem('sen_last_claim')) || 0; const balEl = document.getElementById('balance'); const timeEl = document.getElementById('timer'); const btnEl = document.getElementById('claim-btn'); const statusEl = document.getElementById('status'); const AdController = window.Adsgram.init({ blockId: BLOCK_ID });
+<html lang="en">
 
-function getNextCycleTime() { const now = new Date(); const hours = now.getUTCHours(); const nextCycleHour = Math.floor(hours / 4) * 4 + 4; const nextCycle = new Date(now); nextCycle.setUTCHours(nextCycleHour, 0, 0, 0); return nextCycle.getTime(); }
+<head>
 
-function getCurrentCycleStartTime() { const now = new Date(); const hours = now.getUTCHours(); const currentCycleHour = Math.floor(hours / 4) * 4; const currentCycle = new Date(now); currentCycle.setUTCHours(currentCycleHour, 0, 0, 0); return currentCycle.getTime(); }
+<meta charset="UTF-8">
 
-function updateUI() { balEl.innerText = totalBalance.toFixed(0); const now = new Date().getTime(); const nextCycle = getNextCycleTime(); const currentCycleStart = getCurrentCycleStartTime(); const diff = nextCycle - now;
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-let h = Math.floor((diff / (1000 * 60 * 60)) % 24); let m = Math.floor((diff / (1000 * 60)) % 60); let s = Math.floor((diff / 1000) % 60); timeEl.innerText = h.toString().padStart(2, '0') + ":" + m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
+<title>Sentinel Network Miner</title>
 
-if (lastClaimTime >= currentCycleStart) { btnEl.disabled = true; btnEl.innerText = "ALREADY MINED"; statusEl.innerText = "Next Cycle In:"; } else { btnEl.disabled = false; btnEl.innerText = "MINE 10 $SEN"; statusEl.innerText = "Market Cycle Ready!"; } }
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-async function handleMining() { try { const res = await AdController.show(); if (res.done) { processReward(); } } catch (err) { // If ad fails, we still give the reward so users don't get mad processReward(); } }
+<script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
 
-function processReward() { totalBalance += 10; lastClaimTime = new Date().getTime(); localStorage.setItem('sen_total_bal', totalBalance); localStorage.setItem('sen_last_claim', lastClaimTime); updateUI(); alert("Success! 10 $SEN added to balance."); }
+<style>
 
-setInterval(updateUI, 1000); window.Telegram.WebApp.ready(); updateUI(); </script>
+:root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; }
 
-</body> </html>
+body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0; }
+
+.logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-top: 20px; margin-bottom: 10px; object-fit: cover; }
+
+.card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+
+.balance { font-size: 42px; font-weight: bold; color: var(--primary); }
+
+.timer { font-size: 28px; color: #ffab00; margin: 15px 0; font-family: monospace; }
+
+.btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 18px; transition: 0.3s; }
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; background: #2d334a; color: #8e94a8; }
+
+.info { font-size: 12px; color: #8e94a8; margin-top: 10px; }
+
+</style>
+
+</head>
+
+<body>
+
+<img src="logo.png" class="logo" onerror="this.src=''">
+
+<h2>SENTINEL NETWORK</h2>
+
+<div class="card">
+
+<div>TOTAL $SEN BALANCE</div>
+
+<div class="balance" id="balance">0</div>
+
+</div>
+
+<div class="card">
+
+<div id="status">Market Cycle Mining</div>
+
+<div class="timer" id="timer">--:--:--</div>
+
+<button class="btn" id="claim-btn" onclick="handleMining()" disabled>LOADING...</button>
+
+<div class="info">Next cycle starts every 4 hours (UTC)</div>
+
+</div>
+
+<script>
+
+const BLOCK_ID = "22611";
+
+let totalBalance = parseFloat(localStorage.getItem('sen_total_bal')) || 0;
+
+let lastClaimTime = parseInt(localStorage.getItem('sen_last_claim')) || 0;
+
+const balEl = document.getElementById('balance');
+
+const timeEl = document.getElementById('timer');
+
+const btnEl = document.getElementById('claim-btn');
+
+const statusEl = document.getElementById('status');
+
+// Init Adsgram
+
+const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID }) : null;
+
+function getNextCycleTime() {
+
+const now = new Date();
+
+const hours = now.getUTCHours();
+
+const nextCycleHour = Math.floor(hours / 4) * 4 + 4;
+
+const nextCycle = new Date(now);
+
+nextCycle.setUTCHours(nextCycleHour, 0, 0, 0);
+
+return nextCycle.getTime();
+
+}
+
+function getCurrentCycleStartTime() {
+
+const now = new Date();
+
+const hours = now.getUTCHours();
+
+const currentCycleHour = Math.floor(hours / 4) * 4;
+
+const currentCycle = new Date(now);
+
+currentCycle.setUTCHours(currentCycleHour, 0, 0, 0);
+
+return currentCycle.getTime();
+
+}
+
+function updateUI() {
+
+balEl.innerText = totalBalance.toFixed(0);
+
+const now = new Date().getTime();
+
+const nextCycle = getNextCycleTime();
+
+const currentCycleStart = getCurrentCycleStartTime();
+
+const diff = nextCycle - now;
+
+}
+
+async function handleMining() {
+
+btnEl.disabled = true;
+
+btnEl.innerText = "LOADING AD...";
+
+}
+
+function processReward() {
+
+totalBalance += 10;
+
+lastClaimTime = new Date().getTime();
+
+localStorage.setItem('sen_total_bal', totalBalance);
+
+localStorage.setItem('sen_last_claim', lastClaimTime);
+
+updateUI();
+
+alert("Success! 10 $SEN added.");
+
+}
+
+setInterval(updateUI, 1000);
+
+if (window.Telegram && window.Telegram.WebApp) {
+
+window.Telegram.WebApp.ready();
+
+window.Telegram.WebApp.expand();
+
+}
+
+updateUI();
+
+</script>
+
+</body>
+
+</html>
+
