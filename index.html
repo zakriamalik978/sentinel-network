@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,26 +120,47 @@ function showPage(p) {
 }
 
 function updateUI() {
+    // 1. Calculate Total Rate
     let baseRate = 10;
     if (userData.hasJoinedViaReferral && userData.isVerified) baseRate = 15;
     let totalRate = baseRate + (userData.verifiedReferrals * 2);
 
     balEl.innerText = userData.totalBalance.toFixed(0);
     document.getElementById('rate-badge').innerText = `Mining Rate: ${totalRate}/cycle`;
-    
-    const now = new Date().getTime();
-    const nextCycle = Math.floor(new Date().getUTCHours() / 4) * 4 * 3600000 + 14400000; // Simplified 4h UTC logic
-    // This is a placeholder for the cycle logic you already had:
-    const currentCycleStart = Math.floor(new Date().getUTCHours() / 4) * 4 * 3600000;
 
-    if (userData.lastClaimTime >= currentCycleStart) {
+    // 2. Fixed UTC Timer Logic
+    const now = new Date();
+    const utcHours = now.getUTCHours();
+    
+    // Calculate current cycle start (UTC)
+    const currentCycleHour = Math.floor(utcHours / 4) * 4;
+    const currentCycleStart = new Date(now);
+    currentCycleStart.setUTCHours(currentCycleHour, 0, 0, 0);
+
+    // Calculate next cycle start (UTC)
+    const nextCycleStart = new Date(currentCycleStart);
+    nextCycleStart.setUTCHours(currentCycleHour + 4, 0, 0, 0);
+
+    const diff = nextCycleStart.getTime() - now.getTime();
+    
+    // Formatting time string HH:MM:SS
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    timeEl.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+
+    // 3. Update Button State based on last claim
+    if (userData.lastClaimTime >= currentCycleStart.getTime()) {
         btnEl.disabled = true;
         btnEl.innerText = "ALREADY MINED";
+        statusEl.innerText = "Next Cycle In:";
     } else {
         btnEl.disabled = false;
         btnEl.innerText = `MINE ${totalRate} $SEN`;
+        statusEl.innerText = "Market Cycle Ready!";
     }
 
+    // 4. Update Profile Info
     document.getElementById('team-count').innerText = userData.verifiedReferrals;
     document.getElementById('ref-link').value = `https://t.me/YourBotUsername?start=${userData.id}`;
     
@@ -151,30 +173,26 @@ function updateUI() {
 
 async function verifyFingerprint() {
     const biometry = tg.BiometricManager;
-
     if (!biometry.isInited) {
         biometry.init(() => verifyFingerprint());
         return;
     }
-
     if (!biometry.isBiometricAvailable) {
-        alert("Biometrics not available or not enabled for this bot.");
+        alert("Biometrics not available.");
         return;
     }
-
     if (!biometry.isAccessGranted) {
-        biometry.requestAccess({ reason: "Verify node to unlock high-speed mining." }, (granted) => {
+        biometry.requestAccess({ reason: "Verify node for high-speed mining." }, (granted) => {
             if (granted) alert("Access granted! Tap again to scan.");
         });
         return;
     }
-
     biometry.authenticate({ reason: "Secure your Sentinel Node" }, (success) => {
         if (success) {
             userData.isVerified = true;
             saveData();
             updateUI();
-            alert("Identity Verified! Mining rate increased.");
+            alert("Identity Verified!");
         } else {
             alert("Verification failed.");
         }
@@ -182,7 +200,15 @@ async function verifyFingerprint() {
 }
 
 function handleMining() {
-    processReward(); // Assuming Ad logic is handled similarly to previous
+    // Basic ad loading flow
+    if (AdController) {
+        AdController.show().then(res => {
+            if (res.done) processReward();
+            else alert("Watch the full ad to claim.");
+        }).catch(() => processReward());
+    } else {
+        processReward();
+    }
 }
 
 function processReward() {
@@ -191,6 +217,14 @@ function processReward() {
     userData.lastClaimTime = new Date().getTime();
     saveData();
     updateUI();
+    alert("Success! Balance updated.");
+}
+
+function copyRef() {
+    const copyText = document.getElementById("ref-link");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Referral link copied!");
 }
 
 setInterval(updateUI, 1000);
