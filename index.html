@@ -9,47 +9,80 @@
 <script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-:root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; --safe: #00ff88; }
-body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+:root { --primary: #00d2ff; --bg: #05080f; --card: rgba(22, 27, 44, 0.8); --safe: #00ff88; --gold: #ffd700; }
 
-/* Profile Icon Styling */
-.profile-toggle { position: absolute; top: 20px; right: 20px; background: var(--card); border: 1px solid #2d334a; padding: 10px; border-radius: 50%; cursor: pointer; color: var(--primary); z-index: 1001; }
+body { 
+    background-color: var(--bg); 
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.15) 0%, transparent 80%),
+        linear-gradient(rgba(0, 210, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    color: white; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; 
+}
 
-.main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.logo { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
-.brand-title { margin-top: 10px; font-weight: bold; letter-spacing: 2px; color: #8e94a8; font-size: 14px; }
-.balance { font-size: 64px; font-weight: bold; color: var(--primary); margin: 20px 0; }
+/* Header */
+.header { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; }
+.app-logo { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); }
+.profile-toggle { background: var(--card); border: 1px solid rgba(0, 210, 255, 0.3); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--primary); backdrop-filter: blur(10px); }
 
-/* Bottom Timer/Button Box */
-.bottom-container { position: fixed; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; }
-.btn { width: 90%; max-width: 400px; padding: 22px; border-radius: 20px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 18px; font-family: monospace; transition: 0.3s; }
-.btn:disabled { opacity: 1; background: #161b2c; border: 1px solid #2d334a; color: #ffab00; }
+/* 3D Center Graphics */
+.main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1000px; }
+
+.coin-container { width: 200px; height: 200px; position: relative; transform-style: preserve-3d; animation: rotateCoin 8s infinite linear; }
+.coin-face { 
+    position: absolute; width: 100%; height: 100%; border-radius: 50%; 
+    background: linear-gradient(135deg, #ffd700, #b8860b, #ffd700); 
+    border: 6px solid #f9a825; box-sizing: border-box; 
+    display: flex; align-items: center; justify-content: center; backface-visibility: hidden;
+}
+.coin-face img { width: 120px; height: 120px; border-radius: 50%; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
+.coin-back { transform: rotateY(180deg); }
+
+@keyframes rotateCoin {
+    0% { transform: rotateY(0deg) rotateX(10deg); }
+    100% { transform: rotateY(360deg) rotateX(10deg); }
+}
+
+.balance { font-size: 60px; font-weight: 800; color: white; text-shadow: 0 0 30px rgba(0, 210, 255, 0.6); margin-top: 30px; letter-spacing: -1px; }
+
+/* Bottom Action */
+.bottom-container { padding: 40px 20px; }
+.btn { 
+    width: 100%; max-width: 400px; padding: 22px; border-radius: 24px; border: none; font-weight: bold; 
+    color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); 
+    cursor: pointer; font-size: 18px; font-family: 'Courier New', monospace; 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255,255,255,0.2); transition: 0.3s; 
+}
+.btn:disabled { background: #1a1f2e; color: #ffab00; border: 1px solid #2d334a; box-shadow: none; opacity: 0.9; }
 
 /* Profile Overlay */
-.page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 20px; box-sizing: border-box; }
+.page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 8, 15, 0.98); z-index: 2000; display: none; flex-direction: column; padding: 25px; box-sizing: border-box; backdrop-filter: blur(15px); }
 .page-overlay.active { display: flex; }
-.card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; text-align: left; position: relative; }
-.close-btn { align-self: flex-end; padding: 10px; color: #8e94a8; cursor: pointer; }
-.verified-icon { color: var(--safe); position: absolute; top: 20px; right: 20px; }
+.card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 20px; margin-bottom: 20px; text-align: left; }
+.user-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.id-text { font-size: 12px; color: #8e94a8; }
+.verified-tag { color: var(--safe); display: flex; align-items: center; }
 
-#welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
 
-<div id="welcome-overlay">
-    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary);">
-    <h1 style="color:var(--primary); margin-bottom:40px;">SENTINEL</h1>
-    <button class="btn" onclick="startAppWithAd()">INITIALIZE NODE</button>
-</div>
-
-<div class="profile-toggle" onclick="toggleProfile()">
-    <i data-lucide="user"></i>
+<div class="header">
+    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" class="app-logo">
+    <div class="profile-toggle" onclick="toggleProfile()"><i data-lucide="user"></i></div>
 </div>
 
 <div class="main-content">
-    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" class="logo">
-    <div class="brand-title">SENTINEL NETWORK</div>
+    <div class="coin-container">
+        <div class="coin-face">
+            <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png">
+        </div>
+        <div class="coin-face coin-back">
+            <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png">
+        </div>
+    </div>
     <div class="balance" id="balance">0</div>
 </div>
 
@@ -58,22 +91,25 @@ body { background-color: var(--bg); color: white; font-family: sans-serif; text-
 </div>
 
 <div id="profile-overlay" class="page-overlay">
-    <div class="close-btn" onclick="toggleProfile()"><i data-lucide="x"></i></div>
-    <h2 style="text-align: center; margin-bottom: 30px;">NODE DETAILS</h2>
+    <div style="text-align: right;"><i data-lucide="x" onclick="toggleProfile()" style="cursor:pointer; color:#8e94a8;"></i></div>
+    <h2 style="text-align:center; margin: 20px 0 40px 0;">NODE SETTINGS</h2>
     
     <div class="card">
-        <div id="check-mark" class="verified-icon" style="display: none;"><i data-lucide="badge-check"></i></div>
-        <div style="font-size: 11px; color: #8e94a8;">REGISTERED EMAIL / ID</div>
-        <div id="user-email" style="font-weight: bold; margin-top: 5px; color: var(--primary);">Loading...</div>
-        <div id="verify-box">
-            <button id="biometric-btn" class="btn" style="font-size: 14px; padding: 10px; margin-top: 15px; width: 100%;" onclick="verifyFingerprint()">VERIFY IDENTITY</button>
+        <div class="user-row">
+            <h3 id="user-display-name" style="margin:0;">Loading...</h3>
+            <div id="verified-check" class="verified-tag" style="display:none;"><i data-lucide="badge-check" size="20"></i></div>
+        </div>
+        <div class="id-text">ID: <span id="user-display-id">---</span></div>
+        
+        <div id="verify-section">
+            <button id="biometric-btn" class="btn" style="font-size: 14px; padding: 12px; margin-top: 20px; width: 100%;" onclick="verifyFingerprint()">VERIFY BIOMETRICS</button>
         </div>
     </div>
 
     <div class="card">
-        <div style="font-size: 11px; color: #8e94a8;">REFERRAL NODE LINK</div>
-        <input type="text" id="ref-link" readonly style="width:100%; padding:12px; background:#0b0f1a; border:1px solid #2d334a; color:var(--primary); border-radius:10px; box-sizing: border-box; font-size: 12px; margin-top: 10px;">
-        <button class="btn" onclick="copyRef()" style="font-size: 14px; padding: 10px; margin-top: 10px; width: 100%;">COPY LINK</button>
+        <div style="font-size: 11px; color: #8e94a8; margin-bottom: 10px;">REFERRAL NODE</div>
+        <input type="text" id="ref-link" readonly style="width:100%; padding:14px; background:rgba(0,0,0,0.3); border:1px solid #2d334a; color:var(--primary); border-radius:15px; box-sizing: border-box; font-size: 13px;">
+        <button class="btn" onclick="copyRef()" style="font-size: 14px; padding: 12px; margin-top: 15px; width: 100%;">COPY LINK</button>
     </div>
 </div>
 
@@ -85,7 +121,7 @@ let userData = JSON.parse(localStorage.getItem('sen_user_data')) || {
     isVerified: false,
     verifiedReferrals: 0,
     hasJoinedViaReferral: false,
-    id: "sn" + Math.floor(Math.random() * 1000000)
+    id: "SN" + Math.floor(100000 + Math.random() * 900000)
 };
 
 const tg = window.Telegram.WebApp;
@@ -95,26 +131,17 @@ const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID })
 
 function saveData() { localStorage.setItem('sen_user_data', JSON.stringify(userData)); }
 
-async function startAppWithAd() {
-    if (AdController) try { await AdController.show(); } catch (e) {}
-    document.getElementById('welcome-overlay').style.display = 'none';
-}
-
-function toggleProfile() {
-    document.getElementById('profile-overlay').classList.toggle('active');
-}
+function toggleProfile() { document.getElementById('profile-overlay').classList.toggle('active'); }
 
 function updateUI() {
     let baseRate = (userData.hasJoinedViaReferral && userData.isVerified) ? 15 : 10;
     let totalRate = baseRate + (userData.verifiedReferrals * 2);
-    
     balEl.innerText = Math.floor(userData.totalBalance).toLocaleString();
 
-    // Timer Logic (4-Hour UTC Cycles)
+    // Timer Logic
     const now = new Date();
-    const currentCycleHour = Math.floor(now.getUTCHours() / 4) * 4;
-    const currentCycleStart = new Date(now).setUTCHours(currentCycleHour, 0, 0, 0);
-    const nextCycleStart = new Date(now).setUTCHours(currentCycleHour + 4, 0, 0, 0);
+    const currentCycleStart = new Date(now).setUTCHours(Math.floor(now.getUTCHours() / 4) * 4, 0, 0, 0);
+    const nextCycleStart = currentCycleStart + 14400000;
     const diff = nextCycleStart - now.getTime();
 
     if (userData.lastClaimTime >= currentCycleStart) {
@@ -130,11 +157,12 @@ function updateUI() {
 
     // Profile Data
     const user = tg.initDataUnsafe.user;
-    document.getElementById('user-email').innerText = user ? (user.username || user.id) : userData.id;
+    document.getElementById('user-display-name').innerText = user ? (user.first_name + (user.last_name ? ' ' + user.last_name : '')) : "Anonymous Node";
+    document.getElementById('user-display-id').innerText = user ? user.id : userData.id;
     document.getElementById('ref-link').value = `https://t.me/YourBotUsername?start=${userData.id}`;
     
     if(userData.isVerified) {
-        document.getElementById('check-mark').style.display = "block";
+        document.getElementById('verified-check').style.display = "flex";
         document.getElementById('biometric-btn').style.display = "none";
     }
 }
@@ -142,12 +170,12 @@ function updateUI() {
 async function verifyFingerprint() {
     const biometry = tg.BiometricManager;
     if (!biometry.isInited) { biometry.init(() => verifyFingerprint()); return; }
-    biometry.authenticate({ reason: "Verify Sentinel Node" }, (success) => {
+    biometry.authenticate({ reason: "Confirm Node Ownership" }, (success) => {
         if (success) { 
             userData.isVerified = true; 
             saveData(); 
             updateUI(); 
-            tg.showAlert("Node Verified Successfully!");
+            tg.showAlert("Node Ownership Verified!");
         }
     });
 }
@@ -170,7 +198,7 @@ function copyRef() {
     const copyText = document.getElementById("ref-link");
     copyText.select();
     document.execCommand("copy");
-    tg.showAlert("Link Copied!");
+    tg.showAlert("Ref Link Copied!");
 }
 
 lucide.createIcons();
