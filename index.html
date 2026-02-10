@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sentinel Network - Silicon Core</title>
+<title>Sentinel - Silicon Node</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,7 +11,8 @@
 :root { 
     --primary: #00d2ff; 
     --glow: rgba(0, 210, 255, 0.9);
-    --bg: #02060c; 
+    --bg: #010810; 
+    --trace: rgba(0, 210, 255, 0.15);
 }
 
 body { 
@@ -21,86 +21,96 @@ body {
     text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; 
 }
 
-/* Chipboard Circuit Background */
-.pcb-background {
+/* Entire Background as a Chip Board */
+.circuit-board {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
     background: 
-        radial-gradient(circle at 50% 50%, #0a1a33 0%, #02060c 100%),
-        /* Vertical Circuits */
-        repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 210, 255, 0.05) 41px, transparent 42px),
-        /* Horizontal Circuits */
-        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0, 210, 255, 0.05) 41px, transparent 42px);
+        radial-gradient(circle at 50% 50%, #051a33 0%, #010810 100%);
 }
 
-/* Glowing Nodes on the Chipboard */
-.pcb-nodes {
+/* Thousands of Circuits and Nodes */
+.circuit-board::before {
+    content: ''; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+    background-image: 
+        linear-gradient(var(--trace) 1px, transparent 1px),
+        linear-gradient(90deg, var(--trace) 1px, transparent 1px);
+    background-size: 30px 30px;
+    transform: perspective(1000px) rotateX(20deg);
+    animation: pulseTraces 4s infinite alternate;
+}
+
+.nodes {
     position: absolute; width: 100%; height: 100%;
-    background-image: radial-gradient(var(--primary) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.2;
+    background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);
+    background-size: 30px 30px;
+    opacity: 0.3;
 }
 
-/* Central Shield Logo (No Coin) */
-.main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-
-.shield-projection {
-    position: relative; width: 220px; height: 220px;
-    display: flex; align-items: center; justify-content: center;
+@keyframes pulseTraces {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
 }
 
-/* Electric Rays connecting to Shield */
-.shield-projection::before {
-    content: ''; position: absolute; width: 280px; height: 280px;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 210, 255, 0.1);
-    box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
-    animation: rotateSlow 20s infinite linear;
-}
-
-.central-shield {
-    width: 160px; height: 160px;
-    background: url('https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png') center/cover;
-    filter: drop-shadow(0 0 20px var(--primary)) brightness(1.2);
-    z-index: 10;
-    mask-image: linear-gradient(to bottom, black, transparent); /* Makes it look like a hologram */
-    -webkit-mask-image: radial-gradient(circle, black 60%, transparent 100%);
-    animation: shieldPulse 3s infinite ease-in-out;
-}
-
-@keyframes shieldPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--primary)) brightness(1.1); }
-    50% { transform: scale(1.08); filter: drop-shadow(0 0 35px var(--primary)) brightness(1.4); }
-}
-
-@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.balance { font-size: 58px; font-weight: bold; color: white; margin-top: 30px; text-shadow: 0 0 25px var(--primary); letter-spacing: 2px; }
-
-/* Restored UI Layout */
+/* Header */
 .header { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; box-sizing: border-box; z-index: 1001; }
 .app-logo-small { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--primary); box-shadow: 0 0 10px var(--primary); }
 .profile-toggle { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--primary); box-shadow: 0 0 15px var(--glow); }
 
+/* Central Glowing Shield */
+.main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+
+.shield-core-container {
+    position: relative; width: 180px; height: 180px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* Electrical Rays Joining the Shield */
+.electrical-connection {
+    position: absolute; width: 240px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.5;
+}
+.hor { transform: rotate(0deg); }
+.ver { transform: rotate(90deg); }
+
+.central-shield {
+    width: 140px; height: 140px;
+    background: url('https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png') center/cover;
+    filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2);
+    /* No coin background, just the shield */
+    -webkit-mask-image: radial-gradient(circle, black 70%, transparent 100%);
+    mask-image: radial-gradient(circle, black 70%, transparent 100%);
+    animation: shieldGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes shieldGlow {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--primary)) brightness(1); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 40px var(--primary)) brightness(1.4); }
+}
+
+.balance { font-size: 60px; font-weight: bold; color: white; margin-top: 20px; text-shadow: 0 0 30px var(--primary); letter-spacing: 3px; font-family: monospace; }
+
+/* Bottom Action */
 .bottom-container { padding-bottom: 40px; display: flex; justify-content: center; width: 100%; }
 .btn { 
-    width: 90%; max-width: 400px; padding: 22px; border-radius: 15px; border: 1px solid var(--primary); 
-    font-weight: bold; color: white; background: rgba(0, 0, 0, 0.7); 
-    cursor: pointer; font-size: 16px; letter-spacing: 2px;
-    backdrop-filter: blur(5px); transition: 0.3s;
+    width: 90%; max-width: 400px; padding: 22px; border-radius: 8px; border: 1px solid var(--primary); 
+    font-weight: bold; color: white; background: rgba(0, 0, 0, 0.85); 
+    cursor: pointer; font-size: 16px; letter-spacing: 3px;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); text-transform: uppercase;
 }
-.btn-active { background: rgba(0, 210, 255, 0.15); box-shadow: 0 0 25px var(--glow); }
+.btn-active { background: rgba(0, 210, 255, 0.1); border: 2px solid var(--primary); box-shadow: 0 0 25px var(--glow); }
 
-/* Overlay */
-.page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 4, 10, 0.98); z-index: 2000; display: none; flex-direction: column; padding: 30px; box-sizing: border-box; }
+/* Profile Overlay */
+.page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #010810; z-index: 2000; display: none; flex-direction: column; padding: 30px; box-sizing: border-box; }
 .page-overlay.active { display: flex; }
-.tech-card { background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 15px; padding: 20px; text-align: left; margin-bottom: 20px; }
+.tech-card { background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 10px; padding: 20px; text-align: left; margin-bottom: 20px; }
 
 </style>
 </head>
 <body>
 
-<div class="pcb-background">
-    <div class="pcb-nodes"></div>
+<div class="circuit-board">
+    <div class="nodes"></div>
 </div>
 
 <div class="header">
@@ -109,35 +119,37 @@ body {
 </div>
 
 <div class="main-content">
-    <div class="shield-projection">
+    <div class="shield-core-container">
+        <div class="electrical-connection hor"></div>
+        <div class="electrical-connection ver"></div>
         <div class="central-shield"></div>
     </div>
     <div class="balance" id="balance">0</div>
 </div>
 
 <div class="bottom-container">
-    <button class="btn" id="claim-btn" onclick="handleMining()" disabled>CONNECTING TO CORE...</button>
+    <button class="btn" id="claim-btn" onclick="handleMining()" disabled>CORE BOOTING...</button>
 </div>
 
 <div id="profile-overlay" class="page-overlay">
     <div style="text-align: right;"><i data-lucide="x" onclick="toggleProfile()" style="cursor:pointer; color:var(--primary);"></i></div>
-    <h2 style="text-align: center; color: var(--primary); letter-spacing: 4px;">SYSTEM_ACCESS</h2>
+    <h2 style="text-align: center; color: var(--primary); letter-spacing: 4px;">OPERATOR_SYS</h2>
     
     <div class="tech-card">
-        <div style="font-size: 10px; color: var(--primary);">NODE_USER</div>
+        <div style="font-size: 10px; color: var(--primary);">ACTIVE_NODE</div>
         <div style="font-size: 18px; margin-top: 5px; font-weight: bold;">
             <span id="user-display-name">Loading...</span>
-            <span id="verified-node" style="display:none; color:#00ff88; margin-left: 10px;"><i data-lucide="badge-check" size="18"></i></span>
+            <span id="verified-node" style="display:none; color:#00ff88; margin-left: 10px;"><i data-lucide="cpu" size="18"></i></span>
         </div>
-        <div id="user-display-id" style="font-size: 12px; color: #555; margin-top: 5px;">ID: ---</div>
+        <div id="user-display-id" style="font-size: 12px; color: #444; margin-top: 5px;">UID: ---</div>
         
-        <button id="biometric-btn" class="btn btn-active" style="width:100%; margin-top: 20px; padding: 12px; font-size: 12px;" onclick="verifyNode()">VERIFY_BIOMETRICS</button>
+        <button id="biometric-btn" class="btn btn-active" style="width:100%; margin-top: 20px; padding: 12px; font-size: 12px;" onclick="verifyNode()">INIT_BIO_SCAN</button>
     </div>
 
     <div class="tech-card">
-        <div style="font-size: 10px; color: var(--primary); margin-bottom: 10px;">REFERRAL_PROTOCOL</div>
-        <input type="text" id="ref-link" readonly style="width:100%; padding:12px; background:rgba(0,0,0,0.8); border:1px solid var(--primary); color:white; border-radius:8px; font-family: monospace;">
-        <button class="btn btn-active" onclick="copyRef()" style="width:100%; margin-top: 15px; padding: 12px; font-size: 12px;">COPY_UP_LINK</button>
+        <div style="font-size: 10px; color: var(--primary); margin-bottom: 10px;">DATA_UPLINK_PATH</div>
+        <input type="text" id="ref-link" readonly style="width:100%; padding:12px; background:rgba(0,0,0,0.8); border:1px solid var(--primary); color:white; border-radius:5px; font-family: monospace;">
+        <button class="btn btn-active" onclick="copyRef()" style="width:100%; margin-top: 15px; padding: 12px; font-size: 12px;">COPY_PATH</button>
     </div>
 </div>
 
@@ -165,16 +177,16 @@ function updateUI() {
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        btnEl.innerText = `SYNC_LOCK: ${h}:${m}:${s}`;
+        btnEl.innerText = `LOCKED: ${h}:${m}:${s}`;
     } else {
         btnEl.classList.add('btn-active');
         btnEl.disabled = false;
-        btnEl.innerText = `EXECUTE_MINE`;
+        btnEl.innerText = `INITIATE_MINE`;
     }
 
     const user = tg.initDataUnsafe.user;
-    document.getElementById('user-display-name').innerText = user ? (user.username || user.first_name) : "OPERATOR";
-    document.getElementById('user-display-id').innerText = "SN_ID: " + (user ? user.id : userData.id);
+    document.getElementById('user-display-name').innerText = user ? (user.username || user.first_name) : "OPERATOR_01";
+    document.getElementById('user-display-id').innerText = "UID: " + (user ? user.id : userData.id);
     document.getElementById('ref-link').value = `https://t.me/YourBotUsername?start=${userData.id}`;
     
     if(userData.isVerified) {
@@ -186,8 +198,8 @@ function updateUI() {
 async function verifyNode() {
     const biometry = tg.BiometricManager;
     if (!biometry.isInited) { biometry.init(() => verifyNode()); return; }
-    biometry.authenticate({ reason: "Secure Node Verification" }, (success) => {
-        if (success) { userData.isVerified = true; saveData(); updateUI(); tg.showAlert("Access Granted"); }
+    biometry.authenticate({ reason: "System Security Clearance" }, (success) => {
+        if (success) { userData.isVerified = true; saveData(); updateUI(); tg.showAlert("Authenticated"); }
     });
 }
 
@@ -202,7 +214,7 @@ function copyRef() {
     const copyText = document.getElementById("ref-link");
     copyText.select();
     document.execCommand("copy");
-    tg.showAlert("Protocol Copied!");
+    tg.showAlert("Path Copied!");
 }
 
 lucide.createIcons();
