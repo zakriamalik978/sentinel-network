@@ -1,73 +1,55 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sentinel Network - referral & Security</title>
+<title>Sentinel Network - Mining Logic v7</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
 <style>
-:root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; --text: #ffffff; --safe: #00ff88; --warn: #ffab00; }
-body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-.logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-top: 20px; margin-bottom: 10px; object-fit: cover; }
-.card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; }
-.balance { font-size: 38px; font-weight: bold; color: var(--primary); }
-.btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; background: #2d334a; color: #8e94a8; }
-input { width: 90%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #2d334a; background: #0b0f1a; color: white; outline: none; }
-
-/* Navigation & Pages */
-.nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111625; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d334a; z-index: 100; }
-.nav-item { color: #8e94a8; cursor: pointer; font-size: 12px; font-weight: bold; }
-.nav-item.active { color: var(--primary); }
+:root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; --safe: #00ff88; }
+body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+.card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+.balance { font-size: 42px; font-weight: bold; color: var(--primary); }
+.btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; }
+.btn:disabled { opacity: 0.5; background: #2d334a; }
+.badge { font-size: 11px; padding: 5px 10px; border-radius: 8px; background: rgba(0,210,255,0.1); color: var(--primary); margin-top: 5px; display: inline-block; }
+.nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111625; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d334a; }
+.nav-item { color: #8e94a8; cursor: pointer; font-size: 12px; }
+.nav-item.active { color: var(--primary); font-weight: bold; }
 .page { display: none; }
 .page.active { display: block; }
-.status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 10px; }
-.status-unverified { background: rgba(255, 171, 0, 0.1); color: var(--warn); border: 1px solid var(--warn); }
-.status-verified { background: rgba(0, 255, 136, 0.1); color: var(--safe); border: 1px solid var(--safe); }
+input { width: 80%; padding: 10px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; text-align: center; margin: 10px 0; }
 </style>
 </head>
 <body>
 
 <div id="page-mining" class="page active">
-    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" class="logo">
+    <h2>SENTINEL NODE</h2>
     <div class="card">
-        <div>TOTAL $SEN BALANCE</div>
+        <div>TOTAL $SEN</div>
         <div class="balance" id="balance">0</div>
+        <div id="rate-display" class="badge">Rate: 10 $SEN / Cycle</div>
     </div>
     <div class="card">
-        <div id="timer" style="font-size: 28px; color: #ffab00; font-family: monospace;">--:--:--</div>
-        <button class="btn" id="claim-btn" onclick="handleMining()" disabled>LOADING...</button>
+        <div id="timer" style="font-size: 24px; color: #ffab00; font-family: monospace; margin-bottom: 10px;">04:00:00</div>
+        <button class="btn" id="claim-btn" onclick="handleMining()">MINE NOW</button>
     </div>
 </div>
 
 <div id="page-profile" class="page">
-    <h2>PROFILE & SECURITY</h2>
+    <h2>VERIFICATION & TEAM</h2>
     
-    <div id="auth-section" class="card">
-        <h4>1. Email Verification</h4>
-        <div id="email-input-area">
-            <input type="email" id="user-email" placeholder="Enter Email">
-            <button class="btn" onclick="sendOTP()">SEND CODE</button>
-        </div>
-        <div id="otp-input-area" style="display:none;">
-            <input type="text" id="otp-code" placeholder="Enter 6-digit Code">
-            <button class="btn" onclick="verifyOTP()">VERIFY EMAIL</button>
-        </div>
-    </div>
-
-    <div id="profile-details" class="card" style="display:none;">
-        <div id="verify-badge" class="status-badge status-unverified">UNVERIFIED</div>
-        <h3 id="display-email">---</h3>
-        <button id="biometric-btn" class="btn" style="background: #2d334a;" onclick="verifyBiometrics()">
-            2. VERIFY FINGERPRINT / FACE
-        </button>
+    <div class="card" id="verification-card">
+        <h4>Identity Status</h4>
+        <p id="status-text" style="color:#ffab00">NOT VERIFIED</p>
+        <button id="biometric-btn" class="btn" onclick="verifyFingerprint()">VERIFY FINGERPRINT</button>
     </div>
 
     <div class="card">
-        <h4>3. Referral Program</h4>
-        <p style="font-size: 12px; color:#8e94a8;">Invite friends! Get 15 $SEN per referral. They get 1000 $SEN upon verification.</p>
-        <input type="text" id="ref-link" readonly style="color:var(--primary); text-align:center;">
+        <h4>Referral Link</h4>
+        <p style="font-size: 12px; color: #8e94a8;">Verified Team: <span id="team-count" style="color:var(--primary)">0</span></p>
+        <input type="text" id="ref-link" readonly>
         <button class="btn" onclick="copyRef()">COPY LINK</button>
     </div>
 </div>
@@ -78,15 +60,31 @@ input { width: 90%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 
 </div>
 
 <script>
-const BLOCK_ID = "22611";
-let userData = JSON.parse(localStorage.getItem('sen_v4_data')) || {
-    email: "",
-    emailVerified: false,
-    isVerified: false,
+// --- CORE DATA CONFIGURATION ---
+const STORAGE_KEY = 'sentinel_v7_data';
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// Initialize User Data
+let userData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
     balance: 0,
+    isVerified: false,
+    hasUsedReferral: false, // Did this user join via someone's link?
+    verifiedReferrals: 0,   // How many people did THIS user invite who verified?
     lastClaim: 0,
-    id: "user" + Math.floor(Math.random() * 100000)
+    id: "sn" + Math.floor(Math.random() * 999999)
 };
+
+// Check if user opened via a referral link (Telegram start_param)
+const startParam = tg.initDataUnsafe.start_param;
+if (startParam && !userData.hasUsedReferral) {
+    userData.hasUsedReferral = true;
+    save();
+}
+
+function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+}
 
 function showPage(p) {
     document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
@@ -97,99 +95,73 @@ function showPage(p) {
 }
 
 function updateUI() {
-    document.getElementById('balance').innerText = userData.balance;
-    document.getElementById('ref-link').value = "https://t.me/YourBotName?start=" + userData.id;
-
-    if(userData.emailVerified) {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('profile-details').style.display = 'block';
-        document.getElementById('display-email').innerText = userData.email;
-    }
-
-    if(userData.isVerified) {
-        const badge = document.getElementById('verify-badge');
-        badge.innerText = "FULLY VERIFIED";
-        badge.className = "status-badge status-verified";
-        document.getElementById('biometric-btn').style.display = 'none';
-    }
-
-    // Timer Logic
-    const now = new Date();
-    const currentCycleStart = new Date(now).setUTCHours(Math.floor(now.getUTCHours() / 4) * 4, 0, 0, 0);
-    const diff = (currentCycleStart + 14400000) - now.getTime();
-    let h = Math.floor((diff / 3600000) % 24), m = Math.floor((diff / 60000) % 60), s = Math.floor((diff / 1000) % 60);
-    document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+    // 1. Calculate Mining Rate
+    // Base: 10
+    // If joined via referral & verified: 15
+    // Plus 2 for every verified teammate
+    let baseRate = 10;
+    if (userData.hasUsedReferral && userData.isVerified) baseRate = 15;
     
+    let bonusFromTeam = userData.verifiedReferrals * 2;
+    let totalRate = baseRate + bonusFromTeam;
+
+    // 2. Update Elements
+    document.getElementById('balance').innerText = Math.floor(userData.balance);
+    document.getElementById('rate-display').innerText = `Rate: ${totalRate} $SEN / Cycle`;
+    document.getElementById('team-count').innerText = userData.verifiedReferrals;
+    document.getElementById('ref-link').value = `https://t.me/YourBotName?start=${userData.id}`;
+
+    if (userData.isVerified) {
+        document.getElementById('status-text').innerText = "VERIFIED NODE";
+        document.getElementById('status-text').style.color = "var(--safe)";
+        document.getElementById('biometric-btn').style.display = "none";
+    }
+
+    // 3. Timer & Claim Button
+    const now = new Date();
+    const cycleStart = new Date(now).setUTCHours(Math.floor(now.getUTCHours() / 4) * 4, 0, 0, 0);
     const btn = document.getElementById('claim-btn');
-    if (userData.lastClaim >= currentCycleStart) {
-        btn.disabled = true; btn.innerText = "ALREADY MINED";
+    
+    if (userData.lastClaim >= cycleStart) {
+        btn.disabled = true;
+        btn.innerText = "ALREADY MINED";
     } else {
-        btn.disabled = false; btn.innerText = "MINE 10 $SEN";
+        btn.disabled = false;
+        btn.innerText = `MINE ${totalRate} $SEN`;
     }
 }
 
-// --- NEW FEATURES ---
-function sendOTP() {
-    const email = document.getElementById('user-email').value;
-    if(email.includes('@')) {
-        alert("OTP Sent to " + email + " (Simulation)");
-        document.getElementById('email-input-area').style.display = 'none';
-        document.getElementById('otp-input-area').style.display = 'block';
-        userData.email = email;
-    }
+// --- ACTIONS ---
+function handleMining() {
+    let baseRate = 10;
+    if (userData.hasUsedReferral && userData.isVerified) baseRate = 15;
+    let totalRate = baseRate + (userData.verifiedReferrals * 2);
+
+    userData.balance += totalRate;
+    userData.lastClaim = new Date().getTime();
+    save();
+    updateUI();
+    alert(`Success! ${totalRate} $SEN added to your vault.`);
 }
 
-function verifyOTP() {
-    // Simulated OTP check (Accepts any 6 digits)
-    const code = document.getElementById('otp-code').value;
-    if(code.length === 6) {
-        userData.emailVerified = true;
-        save(); updateUI();
-        alert("Email Verified!");
-    }
-}
-
-async function verifyBiometrics() {
-    if (!window.PublicKeyCredential) {
-        alert("Biometrics not supported on this device. Using PIN fallback.");
-    }
-    // Real Fingerprint Prompt Trigger (Browser Level)
-    try {
-        alert("Scanning Fingerprint...");
-        setTimeout(() => {
-            userData.isVerified = true;
-            // Referral Reward Logic:
-            // If user was referred, the REFERRER gets 1000 and this user gets 15.
-            // Since this is local, we simulate the reward:
-            userData.balance += 15; 
-            save(); updateUI();
-            alert("Success! You gained 15 $SEN for verification.");
-        }, 2000);
-    } catch (e) { alert("Verification Failed"); }
+function verifyFingerprint() {
+    alert("Place finger on sensor...");
+    setTimeout(() => {
+        userData.isVerified = true;
+        save();
+        updateUI();
+        alert("Node Identity Verified!");
+    }, 2000);
 }
 
 function copyRef() {
-    const copyText = document.getElementById("ref-link");
-    copyText.select();
+    const link = document.getElementById("ref-link");
+    link.select();
     document.execCommand("copy");
-    alert("Referral link copied!");
+    alert("Referral Link Copied!");
 }
 
-// --- MINING & ADS ---
-const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID }) : null;
-async function handleMining() {
-    if (AdController) {
-        try { const res = await AdController.show(); if (res.done) reward(); } 
-        catch (e) { reward(); }
-    } else { reward(); }
-}
-function reward() {
-    userData.balance += 10;
-    userData.lastClaim = new Date().getTime();
-    save(); updateUI();
-}
-
-function save() { localStorage.setItem('sen_v4_data', JSON.stringify(userData)); }
+// Keep UI updated every second
 setInterval(updateUI, 1000);
 updateUI();
 </script>
