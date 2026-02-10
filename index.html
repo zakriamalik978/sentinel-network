@@ -1,219 +1,160 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel Network - Unified System</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
-    <style>
-        :root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; --text: #ffffff; --safe: #00ff88; --warn: #ffab00; }
-        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        .container { padding: 20px; text-align: center; }
-        .card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
-        
-        /* Stats & Badges */
-        .balance { font-size: 42px; font-weight: bold; color: var(--primary); }
-        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
-        .status-unverified { background: rgba(255, 171, 0, 0.1); color: var(--warn); border: 1px solid var(--warn); }
-        .status-verified { background: rgba(0, 255, 136, 0.1); color: var(--safe); border: 1px solid var(--safe); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel Network Miner</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
+<style>
+:root { --primary: #00d2ff; --bg: #0b0f1a; --card: #161b2c; }
+body { background-color: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 20px; margin: 0; overflow-x: hidden; }
+.logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-top: 20px; margin-bottom: 10px; object-fit: cover; }
+.card { background: var(--card); border: 1px solid #2d334a; border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+.balance { font-size: 42px; font-weight: bold; color: var(--primary); }
+.timer { font-size: 28px; color: #ffab00; margin: 15px 0; font-family: monospace; }
+.btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 18px; transition: 0.3s; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; background: #2d334a; color: #8e94a8; }
+.info { font-size: 12px; color: #8e94a8; margin-top: 10px; }
 
-        /* UI Elements */
-        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; color: white; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); cursor: pointer; font-size: 16px; }
-        .btn:disabled { opacity: 0.5; background: #2d334a; }
-        input { width: 90%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #2d334a; background: #0b0f1a; color: white; outline: none; }
-        
-        /* Navigation */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111625; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d334a; z-index: 100; }
-        .nav-item { color: #8e94a8; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); }
-
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Welcome Overlay */
-        #welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    </style>
+/* Welcome Screen Overlay */
+#welcome-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg); z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+</style>
 </head>
 <body>
 
 <div id="welcome-overlay">
-    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" class="logo" style="width:120px; height:120px;">
+    <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" style="width:150px; height:150px; border-radius:50%; border:4px solid var(--primary); margin-bottom:20px;">
     <h1 style="color:var(--primary); margin-bottom:5px;">SENTINEL</h1>
-    <p style="color:#8e94a8; margin-bottom:30px;">Decentralized Mining Node</p>
-    <button class="btn" onclick="startAppWithAd()" style="width:70%;">LAUNCH APP</button>
+    <p style="color:#8e94a8; margin-bottom:30px;">Decentralized Mining Network</p>
+    <button class="btn" onclick="startAppWithAd()" style="width:80%;">ENTER MINER</button>
 </div>
 
-<div class="container">
-    <div id="page-mining" class="page active">
-        <h3 style="margin-top:0;">MINING CORE</h3>
-        <div class="card">
-            <div style="font-size: 12px; color: #8e94a8;">TOTAL $SEN EARNED</div>
-            <div class="balance" id="bal-mining">0</div>
-        </div>
-        <div class="card">
-            <div id="status-text">Network Cycle Active</div>
-            <div id="timer" style="font-size: 32px; color: var(--warn); margin: 15px 0; font-family: monospace;">--:--:--</div>
-            <button class="btn" id="claim-btn" onclick="handleMining()">MINE 10 $SEN</button>
-        </div>
-    </div>
+<img src="logo.png" class="logo" onerror="this.src='https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png'">
+<h2>SENTINEL NETWORK</h2>
 
-    <div id="page-profile" class="page">
-        <h3>USER PROFILE</h3>
-        
-        <div id="auth-section" class="card">
-            <h4 style="margin:0 0 10px 0;">Sign Up with Email</h4>
-            <p style="font-size:12px; color:#8e94a8;">Link your email to secure your rewards.</p>
-            <input type="email" id="user-email" placeholder="email@example.com">
-            <button class="btn" onclick="registerUser()">CONTINUE</button>
-        </div>
-
-        <div id="profile-details" class="card" style="display:none;">
-            <div id="verify-badge" class="status-badge status-unverified">UNVERIFIED</div>
-            <h3 id="display-email" style="margin: 5px 0; font-size:18px;">---</h3>
-            <p style="color: #8e94a8; font-size: 13px;">Sentinel Node: <span id="user-id">#0000</span></p>
-            
-            <button id="biometric-btn" class="btn" style="background: #2d334a; margin-top:10px;" onclick="verifyBiometrics()">
-                VERIFY FACE / FINGERPRINT
-            </button>
-        </div>
-
-        <div class="card" style="text-align: left;">
-            <p>💰 Account Balance: <b id="bal-profile">0</b> $SEN</p>
-            <p>📅 Node Established: <span id="join-date">Feb 2026</span></p>
-            <p>⚡ Tier: <b>Basic Miner</b></p>
-        </div>
-    </div>
+<div class="card">
+    <div>TOTAL $SEN BALANCE</div>
+    <div class="balance" id="balance">0</div>
 </div>
 
-<div class="nav-bar">
-    <div class="nav-item active" id="nav-mining" onclick="showPage('mining')">MINING</div>
-    <div class="nav-item" id="nav-profile" onclick="showPage('profile')">PROFILE</div>
+<div class="card">
+    <div id="status">Market Cycle Mining</div>
+    <div class="timer" id="timer">--:--:--</div>
+    <button class="btn" id="claim-btn" onclick="handleMining()" disabled>LOADING...</button>
+    <div class="info">Next cycle starts every 4 hours (UTC)</div>
 </div>
 
 <script>
-    const BLOCK_ID = "22611";
-    const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID }) : null;
+const BLOCK_ID = "22611";
+let totalBalance = parseFloat(localStorage.getItem('sen_total_bal')) || 0;
+let lastClaimTime = parseInt(localStorage.getItem('sen_last_claim')) || 0;
 
-    let userData = JSON.parse(localStorage.getItem('sen_user_data')) || {
-        email: "",
-        balance: 0,
-        isVerified: false,
-        lastClaim: 0,
-        id: Math.floor(1000 + Math.random() * 8999)
-    };
+const balEl = document.getElementById('balance');
+const timeEl = document.getElementById('timer');
+const btnEl = document.getElementById('claim-btn');
+const statusEl = document.getElementById('status');
 
-    // --- NAVIGATION ---
-    function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('page-' + pageId).classList.add('active');
-        document.getElementById('nav-' + pageId).classList.add('active');
-        updateUI();
-    }
+// Initialize Adsgram
+const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID }) : null;
 
-    // --- CORE UI UPDATE ---
-    function updateUI() {
-        document.getElementById('bal-mining').innerText = userData.balance;
-        document.getElementById('bal-profile').innerText = userData.balance;
-
-        // Profile State
-        if(userData.email) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('profile-details').style.display = 'block';
-            document.getElementById('display-email').innerText = userData.email;
-            document.getElementById('user-id').innerText = "#" + userData.id;
-        }
-
-        if(userData.isVerified) {
-            const badge = document.getElementById('verify-badge');
-            badge.innerText = "VERIFIED NODE";
-            badge.className = "status-badge status-verified";
-            document.getElementById('biometric-btn').style.display = 'none';
-        }
-
-        // Timer Logic (4-hour cycle)
-        const now = new Date();
-        const currentCycleStart = new Date(now).setUTCHours(Math.floor(now.getUTCHours() / 4) * 4, 0, 0, 0);
-        const nextCycleStart = currentCycleStart + (4 * 60 * 60 * 1000);
-        const diff = nextCycleStart - now.getTime();
-
-        let h = Math.floor((diff / 3600000) % 24);
-        let m = Math.floor((diff / 60000) % 60);
-        let s = Math.floor((diff / 1000) % 60);
-        document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-
-        const btnEl = document.getElementById('claim-btn');
-        if (userData.lastClaim >= currentCycleStart) {
-            btnEl.disabled = true;
-            btnEl.innerText = "CYCLE COMPLETE";
-            document.getElementById('status-text').innerText = "Next Cycle In:";
-        } else {
-            btnEl.disabled = false;
-            btnEl.innerText = "MINE 10 $SEN";
-            document.getElementById('status-text').innerText = "Network Cycle Ready";
+// Function to show ad on entry
+async function startAppWithAd() {
+    const overlay = document.getElementById('welcome-overlay');
+    if (AdController) {
+        try {
+            await AdController.show();
+        } catch (err) {
+            console.log("Intro ad skip/fail");
         }
     }
+    overlay.style.display = 'none'; // Enter main app
+}
 
-    // --- ADS & MINING ---
-    async function startAppWithAd() {
-        if (AdController) {
-            try { await AdController.show(); } catch (e) {}
+function getNextCycleTime() {
+    const now = new Date();
+    const hours = now.getUTCHours();
+    const nextCycleHour = Math.floor(hours / 4) * 4 + 4;
+    const nextCycle = new Date(now);
+    nextCycle.setUTCHours(nextCycleHour, 0, 0, 0);
+    return nextCycle.getTime();
+}
+
+function getCurrentCycleStartTime() {
+    const now = new Date();
+    const hours = now.getUTCHours();
+    const currentCycleHour = Math.floor(hours / 4) * 4;
+    const currentCycle = new Date(now);
+    currentCycle.setUTCHours(currentCycleHour, 0, 0, 0);
+    return currentCycle.getTime();
+}
+
+function updateUI() {
+    balEl.innerText = totalBalance.toFixed(0);
+    const now = new Date().getTime();
+    const nextCycle = getNextCycleTime();
+    const currentCycleStart = getCurrentCycleStartTime();
+    const diff = nextCycle - now;
+
+    let h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    let m = Math.floor((diff / (1000 * 60)) % 60);
+    let s = Math.floor((diff / 1000) % 60);
+    
+    timeEl.innerText = h.toString().padStart(2, '0') + ":" + m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
+
+    if (lastClaimTime >= currentCycleStart) {
+        btnEl.disabled = true;
+        btnEl.innerText = "ALREADY MINED";
+        statusEl.innerText = "Next Cycle In:";
+    } else {
+        btnEl.disabled = false;
+        btnEl.innerText = "MINE 10 $SEN";
+        statusEl.innerText = "Market Cycle Ready!";
+    }
+}
+
+async function handleMining() {
+    btnEl.disabled = true;
+    btnEl.innerText = "LOADING AD...";
+    
+    if (AdController) {
+        try {
+            const res = await AdController.show();
+            if (res.done) { 
+                processReward(); 
+            } else {
+                btnEl.disabled = false;
+                btnEl.innerText = "MINE 10 $SEN";
+                alert("Please watch the full ad to claim.");
+            }
+        } catch (err) {
+            processReward(); 
         }
-        document.getElementById('welcome-overlay').style.display = 'none';
+    } else {
+        processReward(); 
     }
+}
 
-    async function handleMining() {
-        const btn = document.getElementById('claim-btn');
-        btn.disabled = true;
-        btn.innerText = "LOADING...";
-
-        if (AdController) {
-            try {
-                const res = await AdController.show();
-                if (res.done) processReward();
-                else alert("Watch full ad to claim!");
-            } catch (err) { processReward(); }
-        } else { processReward(); }
-    }
-
-    function processReward() {
-        userData.balance += 10;
-        userData.lastClaim = new Date().getTime();
-        saveData();
-        updateUI();
-        alert("Success! 10 $SEN added to your profile.");
-    }
-
-    // --- AUTH & PROFILE ---
-    function registerUser() {
-        const email = document.getElementById('user-email').value;
-        if(email.includes('@') && email.length > 5) {
-            userData.email = email;
-            saveData();
-            updateUI();
-        } else {
-            alert("Please enter a valid email address.");
-        }
-    }
-
-    async function verifyBiometrics() {
-        alert("Preparing Device Biometrics (Face/Fingerprint)...");
-        // Simulate native biometric check
-        setTimeout(() => {
-            userData.isVerified = true;
-            saveData();
-            updateUI();
-            alert("Identity Verified via Secure Enclave!");
-        }, 2500);
-    }
-
-    function saveData() { localStorage.setItem('sen_user_data', JSON.stringify(userData)); }
-
-    setInterval(updateUI, 1000);
+function processReward() {
+    totalBalance += 10;
+    lastClaimTime = new Date().getTime();
+    localStorage.setItem('sen_total_bal', totalBalance);
+    localStorage.setItem('sen_last_claim', lastClaimTime);
     updateUI();
+    alert("Success! 10 $SEN added.");
+}
+
+setInterval(updateUI, 1000);
+if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+}
+updateUI();
 </script>
 </body>
 </html>
