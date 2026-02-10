@@ -3,208 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sentinel Network</title>
+<title>Sentinel Network - Core</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root { 
     --primary: #00d2ff; 
-    --bg: #020408; 
-    --steel-light: #7a7a7a;
-    --steel-main: #3d3d3d;
-    --steel-dark: #1a1a1a;
+    --core-glow: rgba(0, 210, 255, 0.6);
+    --bg: #010205; 
 }
 
 body { 
     background-color: var(--bg); 
-    color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    color: white; font-family: 'Orbitron', sans-serif; 
     text-align: center; padding: 0; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; 
 }
 
-/* High Graphical Technical Background */
-.bg-overlay {
+/* Electrical Technology Background */
+.tech-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background: 
-        radial-gradient(circle at 50% 50%, #0a1324 0%, #020408 100%);
-}
-.grid-lines {
-    position: absolute; width: 200%; height: 200%;
-    background-image: 
-        linear-gradient(rgba(0, 210, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-    transform: perspective(500px) rotateX(60deg);
-    top: -50%; left: -50%;
-    animation: gridMove 20s infinite linear;
-}
-@keyframes gridMove {
-    from { background-position: 0 0; }
-    to { background-position: 0 500px; }
+    background: radial-gradient(circle at 50% 50%, #06162d 0%, #010205 100%);
 }
 
-/* Header */
-.header { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; box-sizing: border-box; z-index: 1001; }
-.app-logo { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--primary); }
-.profile-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 50%; color: var(--primary); backdrop-filter: blur(10px); }
+.rays {
+    position: absolute; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, rgba(0, 210, 255, 0.03) 2px, transparent 4px);
+    pointer-events: none;
+}
 
-/* Real 3D Metal Coin Construction */
+/* The Energy Core (Replacing the Coin) */
 .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-.coin-container {
-    width: 190px; height: 190px;
+.energy-core {
+    width: 200px; height: 200px;
     position: relative;
-    transform: rotateX(15deg);
-    transform-style: preserve-3d;
-}
-
-/* The Thick Rim (3D Side) */
-.coin-rim {
-    position: absolute; width: 100%; height: 100%;
     border-radius: 50%;
-    background: repeating-linear-gradient(90deg, #222, #444 2px, #222 4px); /* Milled edge texture */
-    transform: translateZ(-12px);
-    box-shadow: 0 30px 50px rgba(0,0,0,0.8);
-}
-
-/* The Physical Face */
-.coin-face {
-    position: absolute; width: 100%; height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, var(--steel-light), var(--steel-main) 70%, var(--steel-dark));
-    border: 5px solid #2a2a2a;
-    box-sizing: border-box;
     display: flex; align-items: center; justify-content: center;
-    transform: translateZ(0);
+    /* Outer glowing ring */
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 20px var(--core-glow), inset 0 0 20px var(--core-glow);
+    animation: corePulse 4s infinite ease-in-out;
 }
 
-/* Embossed/Engraved Logo */
-.logo-emboss {
-    width: 110px; height: 110px;
+.energy-core::before {
+    content: ''; position: absolute;
+    width: 230px; height: 230px;
+    border-radius: 50%;
+    border: 1px dashed var(--primary);
+    opacity: 0.3;
+    animation: rotateSlow 15s infinite linear;
+}
+
+.core-logo {
+    width: 120px; height: 120px;
     border-radius: 50%;
     background: url('https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png') center/cover;
-    filter: grayscale(1) brightness(0.6) contrast(1.4);
-    /* Inset shadow creates the 'pressed into metal' look */
-    box-shadow: 
-        inset 6px 6px 12px rgba(0,0,0,0.9), 
-        inset -4px -4px 8px rgba(255,255,255,0.1),
-        2px 2px 2px rgba(255,255,255,0.05);
-    opacity: 0.85;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px var(--primary)) brightness(1.2);
 }
 
-.balance { font-size: 54px; font-weight: 900; color: #fff; margin-top: 50px; letter-spacing: -1px; text-shadow: 0 0 15px rgba(0,210,255,0.2); }
-
-/* Bottom UI */
-.bottom-area { padding-bottom: 40px; width: 100%; display: flex; justify-content: center; }
-.mining-btn { 
-    width: 90%; max-width: 380px; padding: 20px; border-radius: 18px; border: none; font-weight: bold; 
-    color: white; background: #161b2c; font-size: 16px; 
-    border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+/* Scanning Electrical Ray */
+.scanner {
+    position: absolute; width: 100%; height: 10px;
+    background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+    opacity: 0.5;
+    animation: scanMove 3s infinite ease-in-out;
 }
-.active-btn { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); box-shadow: 0 0 20px rgba(0,210,255,0.3); }
+
+@keyframes corePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--core-glow); }
+    50% { transform: scale(1.05); box-shadow: 0 0 50px var(--core-glow); }
+}
+
+@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@keyframes scanMove {
+    0% { top: -10%; }
+    100% { top: 110%; }
+}
+
+.balance { font-size: 50px; font-weight: bold; color: white; margin-top: 40px; text-shadow: 0 0 15px var(--primary); }
+
+/* Buttons & Profile */
+.header { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; z-index: 1001; }
+.app-logo { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--primary); }
+.profile-toggle { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--primary); }
+
+.btn { 
+    width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; border: none; font-weight: bold; 
+    color: white; background: #0a1324; cursor: pointer; border: 1px solid var(--primary); margin-bottom: 40px;
+}
+.btn-active { background: linear-gradient(90deg, #00d2ff, #3a7bd5); box-shadow: 0 0 15px var(--core-glow); }
 
 /* Profile Overlay */
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 4, 8, 0.98); z-index: 2000; display: none; flex-direction: column; padding: 30px; box-sizing: border-box; backdrop-filter: blur(15px); }
-.overlay.show { display: flex; }
-.profile-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; text-align: left; }
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 30px; }
+.overlay.active { display: flex; }
+.card { background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 20px; padding: 20px; text-align: left; margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
-<div class="bg-overlay">
-    <div class="grid-lines"></div>
+<div class="tech-bg">
+    <div class="rays"></div>
 </div>
 
 <div class="header">
     <img src="https://raw.githubusercontent.com/zakriamalik978/sentinel-network/main/logo.png" class="app-logo">
-    <div class="profile-btn" onclick="toggleOverlay()"><i data-lucide="user"></i></div>
+    <div class="profile-toggle" onclick="toggleProfile()"><i data-lucide="user"></i></div>
 </div>
 
 <div class="main-content">
-    <div class="coin-container">
-        <div class="coin-rim"></div>
-        <div class="coin-face">
-            <div class="logo-emboss"></div>
-        </div>
+    <div class="energy-core">
+        <div class="scanner"></div>
+        <div class="core-logo"></div>
     </div>
     <div class="balance" id="balance">0</div>
 </div>
 
-<div class="bottom-area">
-    <button class="mining-btn" id="claim-btn" onclick="handleMining()" disabled>--:--:--</button>
+<div style="display:flex; justify-content:center;">
+    <button class="btn" id="claim-btn" onclick="handleMining()" disabled>--:--:--</button>
 </div>
 
 <div id="profile-overlay" class="overlay">
-    <div style="text-align: right;"><i data-lucide="x" onclick="toggleOverlay()" style="cursor:pointer;"></i></div>
-    <h2 style="text-align: center; margin-bottom: 30px;">NODE OPERATOR</h2>
+    <div style="text-align: right;"><i data-lucide="x" onclick="toggleProfile()" style="cursor:pointer;"></i></div>
+    <h2 style="text-align:center; color:var(--primary);">NODE SYSTEM</h2>
     
-    <div class="profile-card">
-        <div style="font-size: 11px; color: #666; text-transform: uppercase;">Identity Status</div>
-        <div style="font-size: 22px; font-weight: bold; margin: 8px 0; display: flex; align-items: center; gap: 8px;">
-            <span id="user-name">Loading...</span>
-            <span id="verified-icon" style="display:none; color:#00ff88;"><i data-lucide="badge-check"></i></span>
+    <div class="card">
+        <div style="font-size: 11px; color: #888;">ID: <span id="u-id">---</span></div>
+        <div style="font-size: 20px; margin-top: 5px;">
+            <span id="u-name">Loading...</span>
+            <i data-lucide="badge-check" id="v-icon" style="display:none; color:#00ff88; width:18px; vertical-align:middle;"></i>
         </div>
-        <div id="user-id" style="font-size: 12px; color: var(--primary);">ID: ---</div>
-        
-        <button id="bio-btn" class="mining-btn active-btn" style="width:100%; margin-top: 25px; padding: 12px;" onclick="verifyNode()">VERIFY NODE</button>
+        <button id="bio-btn" class="btn btn-active" style="width:100%; margin-top: 20px; padding: 12px;" onclick="verifyNode()">AUTHENTICATE NODE</button>
     </div>
 
-    <div class="profile-card" style="margin-top: 20px;">
-        <div style="font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 10px;">Network Referral Link</div>
-        <input type="text" id="ref-link" readonly style="width:100%; padding:12px; background:rgba(0,0,0,0.5); border:1px solid #333; color:#fff; border-radius:10px;">
-        <button class="mining-btn active-btn" onclick="copyLink()" style="width:100%; margin-top: 15px; padding: 12px;">COPY LINK</button>
+    <div class="card">
+        <div style="font-size: 11px; color: #888; margin-bottom: 10px;">REFERRAL PROTOCOL</div>
+        <input type="text" id="ref-link" readonly style="width:100%; padding:12px; background:black; border:1px solid var(--primary); color:white; border-radius:10px;">
+        <button class="btn btn-active" onclick="copyRef()" style="width:100%; margin-top: 15px; padding: 12px;">COPY LINK</button>
     </div>
 </div>
 
 <script>
-const BLOCK_ID = "22611";
 let userData = JSON.parse(localStorage.getItem('sen_user_data')) || {
-    totalBalance: 0,
-    lastClaimTime: 0,
-    isVerified: false,
-    verifiedReferrals: 0,
-    hasJoinedViaReferral: false,
-    id: "SN" + Math.floor(100000 + Math.random() * 900000)
+    totalBalance: 0, lastClaimTime: 0, isVerified: false, id: "SN" + Math.floor(100000 + Math.random() * 900000)
 };
 
 const tg = window.Telegram.WebApp;
 const balEl = document.getElementById('balance');
 const btnEl = document.getElementById('claim-btn');
-const AdController = window.Adsgram ? window.Adsgram.init({ blockId: BLOCK_ID }) : null;
 
 function saveData() { localStorage.setItem('sen_user_data', JSON.stringify(userData)); }
-function toggleOverlay() { document.getElementById('profile-overlay').classList.toggle('show'); }
+function toggleProfile() { document.getElementById('profile-overlay').classList.toggle('active'); }
 
 function updateUI() {
-    let baseRate = (userData.hasJoinedViaReferral && userData.isVerified) ? 15 : 10;
-    let totalRate = baseRate + (userData.verifiedReferrals * 2);
     balEl.innerText = Math.floor(userData.totalBalance).toLocaleString();
-
     const now = new Date();
     const currentCycleStart = new Date(now).setUTCHours(Math.floor(now.getUTCHours() / 4) * 4, 0, 0, 0);
-    const nextCycleStart = currentCycleStart + 14400000;
-    const diff = nextCycleStart - now.getTime();
+    const diff = (currentCycleStart + 14400000) - now.getTime();
 
     if (userData.lastClaimTime >= currentCycleStart) {
-        btnEl.classList.remove('active-btn');
+        btnEl.classList.remove('btn-active');
         btnEl.disabled = true;
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        btnEl.innerText = `NEXT MINING IN ${h}:${m}:${s}`;
+        btnEl.innerText = `NEXT SYNC: ${h}:${m}:${s}`;
     } else {
-        btnEl.classList.add('active-btn');
+        btnEl.classList.add('btn-active');
         btnEl.disabled = false;
-        btnEl.innerText = `MINE ${totalRate} $SEN`;
+        btnEl.innerText = `INITIALIZE MINING`;
     }
 
     const user = tg.initDataUnsafe.user;
-    document.getElementById('user-name').innerText = user ? (user.username || user.first_name) : "Operator";
-    document.getElementById('user-id').innerText = "ID: " + (user ? user.id : userData.id);
+    document.getElementById('u-name').innerText = user ? (user.username || user.first_name) : "Operator";
+    document.getElementById('u-id').innerText = user ? user.id : userData.id;
     document.getElementById('ref-link').value = `https://t.me/YourBotUsername?start=${userData.id}`;
-    
     if(userData.isVerified) {
-        document.getElementById('verified-icon').style.display = "inline-block";
+        document.getElementById('v-icon').style.display = "inline-block";
         document.getElementById('bio-btn').style.display = "none";
     }
 }
@@ -212,30 +189,23 @@ function updateUI() {
 async function verifyNode() {
     const biometry = tg.BiometricManager;
     if (!biometry.isInited) { biometry.init(() => verifyNode()); return; }
-    biometry.authenticate({ reason: "Confirm Node Security" }, (success) => {
+    biometry.authenticate({ reason: "Verify Node Access" }, (success) => {
         if (success) { userData.isVerified = true; saveData(); updateUI(); tg.showAlert("Verified!"); }
     });
 }
 
 function handleMining() {
-    if (AdController) {
-        AdController.show().then(res => { if(res.done) processReward(); }).catch(() => processReward());
-    } else { processReward(); }
-}
-
-function processReward() {
-    let baseRate = (userData.hasJoinedViaReferral && userData.isVerified) ? 15 : 10;
-    userData.totalBalance += (baseRate + (userData.verifiedReferrals * 2));
+    userData.totalBalance += 10;
     userData.lastClaimTime = new Date().getTime();
     saveData();
     updateUI();
 }
 
-function copyLink() {
+function copyRef() {
     const copyText = document.getElementById("ref-link");
     copyText.select();
     document.execCommand("copy");
-    tg.showAlert("Link Copied!");
+    tg.showAlert("Copied!");
 }
 
 lucide.createIcons();
